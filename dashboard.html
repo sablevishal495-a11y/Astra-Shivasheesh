@@ -1213,6 +1213,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+    /* User session and profile handler */
+    const storedUser = localStorage.getItem("astra_user");
+    if (storedUser) {
+        try {
+            const user = JSON.parse(storedUser);
+            const nameEl = document.querySelector(".profile-name");
+            if (nameEl && (user.username || user.email)) {
+                nameEl.textContent = user.username || user.email;
+            }
+            if (user.avatar_url) {
+                const circle = document.querySelector(".profile-circle");
+                if (circle) {
+                    circle.style.backgroundImage = `url('${user.avatar_url}')`;
+                    circle.style.backgroundSize = "cover";
+                    circle.style.backgroundPosition = "center";
+                    circle.innerHTML = "";
+                }
+            }
+        } catch (e) {
+            console.error("Failed to parse user profile:", e);
+        }
+    }
+
+    const userProfileEl = document.querySelector(".user-profile");
+    if (userProfileEl) {
+        userProfileEl.style.cursor = "pointer";
+        userProfileEl.title = "Click to sign out";
+        userProfileEl.addEventListener("click", function () {
+            if (confirm("Sign out of ASTRA?")) {
+                localStorage.removeItem("astra_user");
+                localStorage.removeItem("astra_token");
+                window.location.href = "./auth.html";
+            }
+        });
+    }
+
 });
 
 </script>

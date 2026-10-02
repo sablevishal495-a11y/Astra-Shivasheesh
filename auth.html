@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ASTRA Authentication</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
 
@@ -226,6 +227,27 @@
 .primary-button:hover,
 .secondary-button:hover {
     background: #4520b7;
+}
+
+.google-button {
+    width: 100%;
+    height: 32px;
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.google-button:hover {
+    background: #f7f7f7;
+    border-color: #bdbdbd;
 }
 
 
@@ -568,6 +590,30 @@
                 </div>
 
 
+                <!-- GOOGLE SIGN UP -->
+
+                <button
+                    type="button"
+                    class="google-button"
+                    onclick="triggerGoogleSignIn()"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" style="margin-right: 6px;">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+
+                <!-- OR -->
+
+                <div class="or-divider">
+                    <span>OR</span>
+                </div>
+
+
                 <!-- SIGN IN -->
 
                 <button
@@ -681,6 +727,30 @@
                     </button>
 
                 </form>
+
+
+                <!-- OR -->
+
+                <div class="or-divider">
+                    <span>OR</span>
+                </div>
+
+
+                <!-- GOOGLE SIGN IN -->
+
+                <button
+                    type="button"
+                    class="google-button"
+                    onclick="triggerGoogleSignIn()"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" style="margin-right: 6px;">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    Continue with Google
+                </button>
 
 
                 <!-- OR -->
@@ -891,6 +961,57 @@ window.location.href = "./dashboard.html";
 
                 }
             );
+
+        /* =====================================================
+           GOOGLE AUTHENTICATION INTEGRATION
+        ===================================================== */
+
+        const BACKEND_URL = "http://localhost:5001";
+        const GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com";
+
+        window.addEventListener("load", function () {
+            if (window.google && window.google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredentialResponse,
+                    auto_select: false
+                });
+            }
+        });
+
+        function triggerGoogleSignIn() {
+            if (window.google && window.google.accounts) {
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                        console.warn("Google One Tap prompt was not displayed or dismissed.");
+                    }
+                });
+            } else {
+                alert("Google Sign-In is initializing. Configure your GOOGLE_CLIENT_ID in auth.html and backend/.env to complete live OAuth.");
+            }
+        }
+
+        async function handleGoogleCredentialResponse(response) {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/auth/google`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem("astra_user", JSON.stringify(data.user));
+                    localStorage.setItem("astra_token", data.token);
+                    window.location.href = "./dashboard.html";
+                } else {
+                    alert("Google Auth Error: " + (data.message || "Failed to authenticate"));
+                }
+            } catch (err) {
+                console.error("Backend connection error:", err);
+                alert("Could not connect to backend server at " + BACKEND_URL + ". Ensure backend is running.");
+            }
+        }
 
     </script>
 
