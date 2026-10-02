@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ASTRA Authentication</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           MAIN BACKGROUND
+        ===================================================== */
+
+        .auth-page {
+            width: 100%;
+            height: 100vh;
+
+            position: relative;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background-image: url("./assets/auth-bg.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+
+        /* =====================================================
+           ASTRA LOGO
+        ===================================================== */
+
+        .auth-logo {
+            position: absolute;
+
+            top: 48px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 150px;
+            height: auto;
+
+            object-fit: contain;
+        }
+
+
+        /* ================= AUTH CARD ================= */
+
+.auth-card {
+    position: absolute;
+
+    left: 50%;
+    top: 56%;
+
+    transform: translate(-50%, -50%);
+
+    width: 700px;
+    min-height: 500px;
+
+    padding: 55px 55px;
+
+    background: #fff;
+
+    border-radius: 20px;
+
+    display: flex;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* ================= LEFT SIDE ================= */
+
+.auth-left {
+    width: 48%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding: 0 45px 0 20px;
+}
+
+.auth-left-text {
+    max-width: 260px;
+
+    font-size: 17px;
+    line-height: 1.35;
+
+    font-weight: 700;
+
+    color: #111111;
+}
+
+
+/* ================= VERTICAL DIVIDER ================= */
+
+.auth-divider {
+    width: 1px;
+    min-width: 1px;
+    height: 420px;
+
+    background-color: #d2d2d2;
+
+    margin: 0 30px;
+    flex-shrink: 0;
+    display: block;
+}
+
+
+/* ================= RIGHT SIDE ================= */
+
+.auth-right {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 0 5px;
+}
+
+
+/* ================= TITLE ================= */
+
+.auth-title {
+    color: #111111;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    margin: 0 0 20px 0;
+}
+
+
+/* ================= FORM ================= */
+
+.form-group {
+    width: 100%;
+    margin-bottom: 13px;
+}
+
+.form-group label {
+    display: block;
+
+    color: #111111;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    height: 30px;
+
+    padding: 0 8px;
+
+    border: 1px solid #bdbdbd;
+    border-radius: 2px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+}
+
+.form-group input:focus {
+    border-color: #5427d7;
+}
+
+
+/* ================= PURPLE BUTTONS ================= */
+
+.primary-button,
+.secondary-button {
+    width: 100%;
+    height: 32px;
+
+    border: none;
+    border-radius: 2px;
+
+    background: #5427d7;
+
+    color: #ffffff;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.primary-button {
+    margin-top: 3px;
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+    background: #4520b7;
+}
+
+.google-button {
+    width: 100%;
+    height: 32px;
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.google-button:hover {
+    background: #f7f7f7;
+    border-color: #bdbdbd;
+}
+
+
+/* ================= OR ================= */
+
+.or-divider {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    margin: 9px 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #d4d4d4;
+}
+
+.or-divider span {
+    color: #333333;
+
+    font-size: 8px;
+}
+        /* =====================================================
+           SCREEN SYSTEM
+        ===================================================== */
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+
+        /* =====================================================
+           VERIFICATION SCREEN
+        ===================================================== */
+
+        .verification-card {
+            min-height: 215px;
+
+            display: none;
+
+            align-items: center;
+        }
+
+        .verification-card.active {
+            display: flex;
+        }
+
+        .verification-content {
+            width: 100%;
+        }
+
+        .verification-content .auth-title {
+            margin-bottom: 18px;
+        }
+
+        .verification-content .form-group {
+            width: 220px;
+        }
+
+        .verification-content .primary-button {
+            width: 145px;
+        }
+
+
+        /* =====================================================
+           SIGN IN AS EXISTING USER
+        ===================================================== */
+
+        .existing-user {
+            position: absolute;
+
+            left: 50%;
+            bottom: -38px;
+
+            transform: translateX(-50%);
+
+            color: #ffffff;
+
+            font-size: 8px;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .auth-logo {
+                width: 125px;
+                top: 35px;
+            }
+
+            .auth-card {
+                width: calc(100% - 35px);
+
+                min-height: 240px;
+
+                padding: 22px;
+            }
+
+            .auth-left {
+                width: 43%;
+
+                padding-right: 15px;
+            }
+
+            .auth-left-text {
+                font-size: 10px;
+            }
+
+            .auth-divider {
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+
+            .auth-title {
+                font-size: 16px;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            body {
+                overflow: auto;
+            }
+
+            .auth-page {
+                min-height: 100vh;
+                height: auto;
+
+                padding: 120px 12px 60px;
+            }
+
+            .auth-logo {
+                width: 110px;
+                top: 30px;
+            }
+
+            .auth-card {
+                position: relative;
+
+                left: auto;
+                top: auto;
+
+                transform: none;
+
+                width: 100%;
+
+                display: none;
+
+                flex-direction: column;
+
+                padding: 22px;
+            }
+
+            .auth-card.active {
+                display: flex;
+            }
+
+            .auth-left {
+                width: 100%;
+
+                padding: 0;
+
+                margin-bottom: 20px;
+            }
+
+            .auth-left-text {
+                max-width: 100%;
+
+                font-size: 11px;
+            }
+
+            .auth-divider {
+                display: none;
+            }
+
+            .auth-right {
+                width: 100%;
+            }
+
+            .verification-card.active {
+                display: flex;
+            }
+
+            .verification-content .form-group {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         AUTHENTICATION PAGE
+    ===================================================== -->
+
+    <main class="auth-page">
+
+
+        <!-- =================================================
+             ASTRA LOGO
+        ================================================== -->
+
+        <img
+            src="./assets/astra-logo.png"
+            alt="ASTRA Logo"
+            class="auth-logo"
+        >
+
+
+        <!-- =================================================
+             CREATE ACCOUNT SCREEN
+        ================================================== -->
+
+        <section
+            id="signupScreen"
+            class="auth-card screen active"
+        >
+
+            <!-- LEFT SIDE -->
+
+            <div class="auth-left">
+
+                <div class="auth-left-text">
+                    Try Astra insight portal for free
+                    upto 3 months
+                </div>
+
+            </div>
+
+
+            <!-- DIVIDER -->
+
+            <div class="auth-divider"></div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="auth-right">
+
+                <h2 class="auth-title">
+                    Sign up
+                </h2>
+
+
+                <form id="signupForm">
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="signupEmail">
+                            email address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="signupEmail"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="signupUsername">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="signupUsername"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="signupPassword">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="signupPassword"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CONTINUE -->
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Continue
+                    </button>
+
+                </form>
+
+
+                <!-- OR -->
+
+                <div class="or-divider">
+                    <span>OR</span>
+                </div>
+
+
+                <!-- GOOGLE SIGN UP -->
+
+                <button
+                    type="button"
+                    class="google-button"
+                    onclick="triggerGoogleSignIn()"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" style="margin-right: 6px;">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+
+                <!-- OR -->
+
+                <div class="or-divider">
+                    <span>OR</span>
+                </div>
+
+
+                <!-- SIGN IN -->
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="showSignin()"
+                >
+                    Sign in as existing user
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SIGN IN SCREEN
+        ================================================== -->
+
+        <section
+            id="signinScreen"
+            class="auth-card screen"
+        >
+
+            <!-- LEFT SIDE -->
+
+            <div class="auth-left">
+
+                <div class="auth-left-text">
+                    Try Astra insight portal for free
+                    upto 3 months
+                </div>
+
+            </div>
+
+
+            <!-- DIVIDER -->
+
+            <div class="auth-divider"></div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="auth-right">
+
+                <h2 class="auth-title">
+                    Sign in
+                </h2>
+
+
+                <form id="signinForm">
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="signinEmail">
+                            email address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="signinEmail"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="signinUsername">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="signinUsername"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="signinPassword">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="signinPassword"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CONTINUE -->
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Continue
+                    </button>
+
+                </form>
+
+
+                <!-- OR -->
+
+                <div class="or-divider">
+                    <span>OR</span>
+                </div>
+
+
+                <!-- GOOGLE SIGN IN -->
+
+                <button
+                    type="button"
+                    class="google-button"
+                    onclick="triggerGoogleSignIn()"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" style="margin-right: 6px;">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+
+                <!-- OR -->
+
+                <div class="or-divider">
+                    <span>OR</span>
+                </div>
+
+
+                <!-- CREATE ACCOUNT -->
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="showSignup()"
+                >
+                    Create account
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             EMAIL VERIFICATION SCREEN
+        ================================================== -->
+
+        <section
+            id="verificationScreen"
+            class="auth-card verification-card screen"
+        >
+
+            <div class="verification-content">
+
+                <h2 class="auth-title">
+                    Email verification
+                </h2>
+
+
+                <form id="verificationForm">
+
+                    <div class="form-group">
+
+                        <label for="verificationCode">
+                            verification code
+                        </label>
+
+                        <input
+                            type="text"
+                            id="verificationCode"
+                            maxlength="6"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Continue
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- SIGN IN LINK -->
+
+            <div
+                class="existing-user"
+                onclick="showSignin()"
+            >
+                Sign in as existing user
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
+
+    <script>
+
+        /* =====================================================
+           GET SCREENS
+        ===================================================== */
+
+        const signupScreen =
+            document.getElementById("signupScreen");
+
+        const signinScreen =
+            document.getElementById("signinScreen");
+
+        const verificationScreen =
+            document.getElementById("verificationScreen");
+
+
+        /* =====================================================
+           HIDE ALL SCREENS
+        ===================================================== */
+
+        function hideAllScreens() {
+
+            signupScreen.classList.remove("active");
+
+            signinScreen.classList.remove("active");
+
+            verificationScreen.classList.remove("active");
+
+        }
+
+
+        /* =====================================================
+           SHOW SIGNUP
+        ===================================================== */
+
+        function showSignup() {
+
+            hideAllScreens();
+
+            signupScreen.classList.add("active");
+
+        }
+
+
+        /* =====================================================
+           SHOW SIGN IN
+        ===================================================== */
+
+        function showSignin() {
+
+            hideAllScreens();
+
+            signinScreen.classList.add("active");
+
+        }
+
+
+        /* =====================================================
+           SHOW VERIFICATION
+        ===================================================== */
+
+        function showVerification() {
+
+            hideAllScreens();
+
+            verificationScreen.classList.add("active");
+
+        }
+
+
+        /* =====================================================
+           SIGNUP FORM
+        ===================================================== */
+
+        document
+            .getElementById("signupForm")
+            .addEventListener(
+                "submit",
+                function(event) {
+
+                    event.preventDefault();
+
+                    showVerification();
+
+                }
+            );
+
+
+        /* =====================================================
+           SIGN IN FORM
+        ===================================================== */
+
+        document
+            .getElementById("signinForm")
+            .addEventListener(
+                "submit",
+                function(event) {
+
+                    event.preventDefault();
+                    
+window.location.href = "./dashboard.html";
+
+                }
+            );
+
+
+        /* =====================================================
+           VERIFICATION FORM
+        ===================================================== */
+
+        document
+            .getElementById("verificationForm")
+            .addEventListener(
+                "submit",
+                function(event) {
+
+                    event.preventDefault();
+                    
+window.location.href = "./dashboard.html";
+
+                }
+            );
+
+        /* =====================================================
+           GOOGLE AUTHENTICATION INTEGRATION
+        ===================================================== */
+
+        const BACKEND_URL = "http://localhost:5001";
+        const GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com";
+
+        window.addEventListener("load", function () {
+            if (window.google && window.google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredentialResponse,
+                    auto_select: false
+                });
+            }
+        });
+
+        function triggerGoogleSignIn() {
+            if (window.google && window.google.accounts) {
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                        console.warn("Google One Tap prompt was not displayed or dismissed.");
+                    }
+                });
+            } else {
+                alert("Google Sign-In is initializing. Configure your GOOGLE_CLIENT_ID in auth.html and backend/.env to complete live OAuth.");
+            }
+        }
+
+        async function handleGoogleCredentialResponse(response) {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/auth/google`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem("astra_user", JSON.stringify(data.user));
+                    localStorage.setItem("astra_token", data.token);
+                    window.location.href = "./dashboard.html";
+                } else {
+                    alert("Google Auth Error: " + (data.message || "Failed to authenticate"));
+                }
+            } catch (err) {
+                console.error("Backend connection error:", err);
+                alert("Could not connect to backend server at " + BACKEND_URL + ". Ensure backend is running.");
+            }
+        }
+
+    </script>
+
+</body>
+</html>
